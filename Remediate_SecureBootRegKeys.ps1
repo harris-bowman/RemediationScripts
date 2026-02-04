@@ -16,17 +16,32 @@ try {
         $log = $log + "SecureBoot registry path created. "
     }
 
-    New-ItemProperty -Path $Path -Name 'HighConfidenceOptOut' -PropertyType DWord -Value 0 -Force
-    $log = $log + "Configured HighConfidenceOptOut to 0. "
-    New-ItemProperty -Path $Path -Name 'MicrosoftUpdateManagedOptIn' -PropertyType DWord -Value 1 -Force
-    $log = $log + "Configured MicrosoftUpdateManagedOptIn to 1. "
-
+    $value = Get-ItemPropertyValue -Path $Path -Name 'HighConfidenceOptOut' -ErrorAction SilentlyContinue
+    if ($null -eq $value) {
+        New-ItemProperty -Path $Path -Name 'HighConfidenceOptOut' -PropertyType DWord -Value 0 -Force
+    } elseif ($value -ne 0) {
+        Set-ItemProperty -Path $Path -Name 'HighConfidenceOptOut' -Value 0 -Force
+        $log = $log + "Configured HighConfidenceOptOut to 0. "
+    }   
     
+    $value = Get-ItemPropertyValue -Path $Path -Name 'MicrosoftUpdateManagedOptIn' -ErrorAction SilentlyContinue
+    if ($null -eq $value) {
+        New-ItemProperty -Path $Path -Name 'MicrosoftUpdateManagedOptIn' -PropertyType DWord -Value 1 -Force
+    } elseif ($value -ne 1) {
+        Set-ItemProperty -Path $Path -Name 'MicrosoftUpdateManagedOptIn' -Value 1 -Force
+        $log = $log + "Configured MicrosoftUpdateManagedOptIn to 1. "
+    }   
+
     $keyItem = Get-Item -Path $Path
     $val = $keyItem.GetValue('AvailableUpdates', $null)
     if ($null -eq $val) {
         New-ItemProperty -Path $Path -Name 'AvailableUpdates' -PropertyType DWord -Value 0x5944 -Force
-        $log = $log + "AvailableUpdates value not present, Configured AvailableUpdates to 0x5944. "
+        $log = $log + "Configured AvailableUpdates to 0x5944 (key didn't exist.). "
+        Start-ScheduledTask -TaskName "\Microsoft\Windows\PI\Secure-Boot-Update" -ErrorAction SilentlyContinue
+        $log = $log + "Attempted to start Scheduled Task. "
+    } elseif (0 -eq $val) {
+        Set-ItemProperty -Path $Path -Name 'AvailableUpdates' -Value 0x5944 -Force
+        $log = $log + "Configured AvailableUpdates to 0x5944 (was 0). "
         Start-ScheduledTask -TaskName "\Microsoft\Windows\PI\Secure-Boot-Update" -ErrorAction SilentlyContinue
         $log = $log + "Attempted to start Scheduled Task. "
     } else {
@@ -38,5 +53,5 @@ try {
     Write-Host "Error configuring SecureBoot registry keys: $($_.Exception.Message)" + "|" + $log
     exit 1
 }
-Write-Host "Successfully configured SecureBoot registry keys. " + $log
+Write-Host "Successfully configured SecureBoot registry keys. "$log
 exit 0

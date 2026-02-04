@@ -16,18 +16,22 @@ if (!(Test-Path $Path)) {
 } 
 
 if ((Get-ItemProperty -Path $Path -Name 'HighConfidenceOptOut' -ErrorAction SilentlyContinue).HighConfidenceOptOut -ne 0) {
-    $log = $log + " HighConfidenceOptOut is not set to 0."
+    $log = $log + " HighConfidenceOptOut is not set to 0. "
     $fail = $true
 }
 
 if ((Get-ItemProperty -Path $Path -Name 'MicrosoftUpdateManagedOptIn' -ErrorAction SilentlyContinue).MicrosoftUpdateManagedOptIn -ne 1) {
-    $log = $log + " MicrosoftUpdateManagedOptIn is not set to 1."
+    $log = $log + " MicrosoftUpdateManagedOptIn is not set to 1. "
     $fail = $true
 }
 
-if (!(Get-ItemProperty -Path $Path -Name 'AvailableUpdates' -ErrorAction SilentlyContinue)) {
-    $log = $log + " AvailableUpdates is not set."
-    $fail = $true
+$value = Get-ItemPropertyValue -Path $Path -Name 'AvailableUpdates' -ErrorAction SilentlyContinue
+if ($null -eq $value) {
+        $log += " AvailableUpdates is not set."
+        $fail = $true
+} elseif ($value -eq 0) {
+        $log += " AvailableUpdates is set to 0. "
+        $fail = $true
 }
 
 if ($fail) {
@@ -35,6 +39,10 @@ if ($fail) {
     Write-Host $log
     exit 1 
 } else {
-    Write-Host "All SecureBoot registry keys are correctly configured."
+    $hkOO = (Get-ItemProperty -Path $Path -Name 'HighConfidenceOptOut' -ErrorAction SilentlyContinue).HighConfidenceOptOut
+    $mkMUI = (Get-ItemProperty -Path $Path -Name 'MicrosoftUpdateManagedOptIn' -ErrorAction SilentlyContinue).MicrosoftUpdateManagedOptIn
+    $auKey = (Get-ItemProperty -Path $Path -Name 'AvailableUpdates' -ErrorAction SilentlyContinue).AvailableUpdates
+    $auKeyvalHex = ('0x{0:X}' -f $auKey)
+    Write-Host "All SecureBoot registry keys are correctly configured: HighConfidenceOptOut: $hkOO MicrosoftUpdateManagedOptIn: $mkMUI AvailableUpdates: $auKeyvalHex"
     exit 0
 }
