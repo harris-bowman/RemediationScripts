@@ -56,6 +56,6 @@ Path: HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Control\SecureBoot
 
 | Key | Set to Value | Description |
 | --- | --- | --- |
-| AvailableUpdates | IF it exists & is not 0 = 0x5944 | Controls which Secure Boot update actions to perform on the device. Setting the appropriate bitfield here initiates the deployment of new Secure Boot certificates and related updates. For enterprise deployment, this should be set to 0x5944 (hex) – a value that enables all relevant updates (adding the new 2023 CA certificates, updating the KEK, and installing the new boot manager). |
+| AvailableUpdates | IF it doesn't exist or is currently 0. = 0x5944 | Controls which Secure Boot update actions to perform on the device. Setting the appropriate bitfield here initiates the deployment of new Secure Boot certificates and related updates. For enterprise deployment, this should be set to 0x5944 (hex) – a value that enables all relevant updates (adding the new 2023 CA certificates, updating the KEK, and installing the new boot manager). |
 | HighConfidenceOptOut | DWORD: 0 | An opt out option. For enterprises that want to opt out of high confidence buckets that will automatically be applied as part of the LCU. |
 | MicrosoftUpdateManagedOptIn | DWORD: 1 | An opt in option. For enterprises that want to opt-in to Controlled Feature Rollout (CFR) servicing, also known as Microsoft Managed. |
