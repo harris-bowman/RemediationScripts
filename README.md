@@ -41,7 +41,7 @@ Path: HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Control\SecureBoot
 Sets the AOVPN Device tunel installed on the system to a chosen IPv4 Interface metric by editing %programdata%\Microsoft\Network\Connections\Pbk\rasphone.pbk
 
 ## Remediate-AOVPNUserTunelIPv4Metric.ps1
-Sets the AOVPN User tunel installed on the system to a chosen IPv4 Interface metric by editing %programdata%\Microsoft\Network\Connections\Pbk\rasphone.pbk
+Sets the AOVPN User tunel installed on the system to a chosen IPv4 Interface metric by editing %appdata%\Microsoft\Network\Connections\Pbk\rasphone.pbk
 
 ## Remediate-PublicDNSAddressesOnNIC.ps1
 Clears HKLM:\SYSTEM\CurrentControlSet\Services\Tcpip\Parameters\Interfaces "NameServer" - So the systems DNS servers are left up to the NIC, ie. DHCP option configuring.
