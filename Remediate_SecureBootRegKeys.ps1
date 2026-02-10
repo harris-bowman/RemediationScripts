@@ -31,7 +31,7 @@ $value = $null
 #Safeguard if certificates are already installed:
 if ((Get-ItemProperty -Path 'HKLM:\SYSTEM\CurrentControlSet\Control\SecureBoot\Servicing' -Name 'UEFICA2023Status' -ErrorAction SilentlyContinue).UEFICA2023Status -eq "Updated"-and (([System.Text.Encoding]::ASCII.GetString((Get-SecureBootUEFI db).bytes) -match 'Windows UEFI CA 2023'))) {
     Write-Host "SecureBoot updates already installed successfully. No remediation needed."
-    #exit 0
+    exit 0
 }
 
 #Check the registry key SecureBoot exists.
@@ -39,7 +39,6 @@ if (!(Test-Path $Path)) {
     New-Item -Path $Path -Force
     $log += "SecureBoot registry path created. "
 }
-
 
 try {
     $value = Get-ItemPropertyValue -Path $Path -Name 'HighConfidenceOptOut' -ErrorAction Stop
