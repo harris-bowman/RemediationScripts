@@ -39,13 +39,9 @@ if (!(Test-Path $Path)) {
     New-Item -Path $Path -Force
     $log += "SecureBoot registry path created. "
 }
+$keyItem = Get-Item -Path $Path
 
-try {
-    $value = Get-ItemPropertyValue -Path $Path -Name 'HighConfidenceOptOut' -ErrorAction Stop
-}
-catch {
-    $value = $null
-}
+$value = $keyItem.GetValue('HighConfidenceOptOut', $null)
 if ($null -eq $value) {
     #If HighConfidenceOptOut doesn't exist, create it and set to 0.
     New-ItemProperty -Path $Path -Name 'HighConfidenceOptOut' -PropertyType DWord -Value 0 -Force
@@ -55,12 +51,7 @@ if ($null -eq $value) {
     $log += "Configured HighConfidenceOptOut to 0. "
 }   
 
-try {
-    $value = Get-ItemPropertyValue -Path $Path -Name 'MicrosoftUpdateManagedOptIn' -ErrorAction Stop
-}
-catch {
-    $value = $null
-}
+$value = $keyItem.GetValue('MicrosoftUpdateManagedOptIn', $null)
 if ($null -eq $value) {
     #If MicrosoftUpdateManagedOptIn doesn't exist, create it and set to 1.
     New-ItemProperty -Path $Path -Name 'MicrosoftUpdateManagedOptIn' -PropertyType DWord -Value 1 -Force
@@ -70,7 +61,6 @@ if ($null -eq $value) {
     $log += "Configured MicrosoftUpdateManagedOptIn to 1. "
 }   
 
-$keyItem = Get-Item -Path $Path
 $val = $keyItem.GetValue('AvailableUpdates', $null)
 if ($null -eq $val) {
     #If AvailableUpdates doesn't exist, create it and set to 0x5944.
