@@ -39,7 +39,7 @@ if (!(Test-Path $Path)) {
 } else {
     
     if ((Get-ItemProperty -Path $path -Name 'UEFICA2023Status' -ErrorAction SilentlyContinue).UEFICA2023Status -eq "NotStarted") {
-        $log =+= "The update has not yet run. "
+        $log += "The update has not yet run. "
     } elseif ((Get-ItemProperty -Path $path -Name 'UEFICA2023Status' -ErrorAction SilentlyContinue).UEFICA2023Status -eq "InProgress") {
         $log += "The update is actively in progress. "
     } elseif (((Get-ItemProperty -Path $path -Name 'UEFICA2023Status' -ErrorAction SilentlyContinue).UEFICA2023Status -eq "Updated") -and (([System.Text.Encoding]::ASCII.GetString((Get-SecureBootUEFI db).bytes) -match 'Windows UEFI CA 2023'))) {
