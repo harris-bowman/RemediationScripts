@@ -18,6 +18,14 @@
 $path = 'HKLM:\SYSTEM\CurrentControlSet\Control\SecureBoot\Servicing'
 $log = ""
 
+if ([System.Text.Encoding]::ASCII.GetString((Get-SecureBootUEFI db).bytes) -match 'Windows UEFI CA 2023') {
+    $log += "The Windows UEFI CA 2023 certificate is present in the UEFI store. "
+    Write-Host $log
+    exit 0
+} else {
+    $log += "The Windows UEFI CA 2023 certificate is NOT present in the UEFI store. "
+}
+
 $keyItem = Get-Item -Path $Path
 $UEFICA2023StatusVal = $keyItem.GetValue('UEFICA2023Status', $null)
 $UEFICA2023ErrorVal = $keyItem.GetValue('UEFICA2023Error', $null)
